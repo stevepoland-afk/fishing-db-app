@@ -728,28 +728,74 @@
             header {
                 padding: var(--space-lg);
             }
-            
+
             .header-content {
                 flex-direction: column;
                 gap: var(--space-md);
             }
-            
+
             main {
                 padding: var(--space-lg);
             }
-            
+
             .search-bar {
                 flex-direction: column;
             }
-            
+
             select.search-input {
                 max-width: 100%;
             }
-            
+
             .form-row {
                 grid-template-columns: 1fr;
             }
         }
+
+        /* Series styles */
+        .series-status { font-size: 0.7rem; padding: var(--space-xs) var(--space-sm); border-radius: 20px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+        .series-status.active { background: rgba(78,205,196,0.2); color: var(--seafoam); }
+        .series-status.completed { background: rgba(212,165,116,0.2); color: var(--gold); }
+        .series-status.upcoming { background: rgba(255,255,255,0.1); color: var(--text-secondary); }
+
+        .series-rule { font-size: 0.8rem; color: var(--gold); font-weight: 500; }
+
+        .sub-tabs { display: flex; gap: var(--space-sm); margin-bottom: var(--space-lg); flex-wrap: wrap; }
+        .sub-tab { padding: var(--space-sm) var(--space-md); border-radius: 20px; font-size: 0.85rem; font-weight: 500; cursor: pointer; background: rgba(255,255,255,0.05); color: var(--text-secondary); border: 1px solid rgba(255,255,255,0.1); transition: all 0.2s; }
+        .sub-tab:hover { background: rgba(78,205,196,0.1); color: var(--text-primary); }
+        .sub-tab.active { background: rgba(78,205,196,0.2); color: var(--seafoam); border-color: var(--seafoam); }
+
+        .sub-panel { display: none; }
+        .sub-panel.active { display: block; }
+
+        .detail-header { display: flex; align-items: center; gap: var(--space-md); margin-bottom: var(--space-lg); }
+        .back-btn { background: none; border: 1px solid rgba(255,255,255,0.2); color: var(--text-secondary); padding: var(--space-sm) var(--space-md); border-radius: var(--radius-sm); cursor: pointer; font-size: 0.85rem; transition: all 0.2s; }
+        .back-btn:hover { color: var(--text-primary); border-color: var(--text-primary); }
+
+        .leaderboard-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; }
+        .leaderboard-table th { text-align: left; padding: var(--space-sm) var(--space-md); color: var(--text-secondary); font-weight: 500; border-bottom: 1px solid rgba(255,255,255,0.15); white-space: nowrap; }
+        .leaderboard-table td { padding: var(--space-sm) var(--space-md); border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .leaderboard-table tr:hover td { background: rgba(78,205,196,0.05); }
+        .leaderboard-table .rank-1 td { background: rgba(212,165,116,0.1); }
+        .leaderboard-table .rank-2 td { background: rgba(192,192,192,0.08); }
+        .leaderboard-table .rank-3 td { background: rgba(205,127,50,0.08); }
+        .leaderboard-table .counted { font-weight: 700; color: var(--seafoam); }
+        .leaderboard-table .not-counted { color: var(--text-secondary); }
+        .leaderboard-table .best-of-col { color: var(--gold); font-weight: 700; }
+
+        .points-grid { display: grid; grid-template-columns: 1fr auto; gap: var(--space-sm); align-items: center; margin-bottom: var(--space-md); }
+        .points-grid label { font-size: 0.9rem; color: var(--text-secondary); }
+        .points-grid input { width: 100px; padding: var(--space-sm); background: rgba(0,0,0,0.3); border: 1px solid rgba(78,205,196,0.2); border-radius: var(--radius-sm); color: var(--text-primary); font-family: var(--font-body); text-align: right; }
+        .points-grid input:focus { outline: none; border-color: var(--accent); }
+
+        .mini-table { width: 100%; border-collapse: collapse; font-size: 0.85rem; margin-bottom: var(--space-md); }
+        .mini-table th { text-align: left; padding: var(--space-sm); color: var(--text-secondary); font-weight: 500; border-bottom: 1px solid rgba(255,255,255,0.15); }
+        .mini-table td { padding: var(--space-sm); border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .mini-table tr:hover td { background: rgba(78,205,196,0.05); }
+
+        .leaderboard-filters { display: flex; gap: var(--space-sm); margin-bottom: var(--space-md); flex-wrap: wrap; }
+        .leaderboard-filters select { padding: var(--space-sm) var(--space-md); background: rgba(0,0,0,0.3); border: 1px solid rgba(78,205,196,0.2); border-radius: var(--radius-sm); color: var(--text-primary); font-family: var(--font-body); cursor: pointer; }
+
+        .table-scroll { overflow-x: auto; }
     </style>
 </head>
 <body>
@@ -762,6 +808,7 @@
             <nav class="nav-links">
                 <span class="nav-link active" data-view="browse" onclick="switchView('browse')">Browse</span>
                 <span class="nav-link" data-view="tournaments" onclick="switchView('tournaments')">Tournaments</span>
+                <span class="nav-link" data-view="series" onclick="switchView('series')">Series</span>
                 <span class="nav-link" onclick="exportData()">Export</span>
             </nav>
         </div>
@@ -905,7 +952,7 @@
                 <input type="text" class="search-input" id="t-search" placeholder="Search tournaments...">
                 <select class="search-input" id="t-filter-state">
                     <option value="">All States</option>
-                    <option value="NC">NC</option><option value="SC">SC</option>
+                    <option value="VA">VA</option><option value="NC">NC</option><option value="SC">SC</option>
                     <option value="GA">GA</option><option value="FL">FL</option>
                     <option value="AL">AL</option><option value="MS">MS</option>
                     <option value="LA">LA</option><option value="TX">TX</option>
@@ -946,6 +993,7 @@
             <div class="research-filters">
                 <select id="t-research-state">
                     <option value="">Any State</option>
+                    <option value="VA">Virginia</option>
                     <option value="NC">North Carolina</option>
                     <option value="SC">South Carolina</option>
                     <option value="GA">Georgia</option>
@@ -991,6 +1039,134 @@
             </div>
         </div>
       </div><!-- /view-tournaments -->
+
+      <!-- ===== Series View ===== -->
+      <div id="view-series" class="view">
+        <!-- Series Main Panel -->
+        <div class="panel">
+          <!-- Series List (shown when no series selected) -->
+          <div id="series-list-view">
+            <div class="panel-header">
+                <h2 class="panel-title"><span class="icon">🏅</span> Tournament Series</h2>
+                <button class="btn btn-primary" onclick="openSeriesModal()"><span>+</span> Add Series</button>
+            </div>
+            <div class="stats-bar" id="series-stats">
+                <div class="stat"><div class="stat-value" id="sstat-total">0</div><div class="stat-label">Total</div></div>
+                <div class="stat"><div class="stat-value" id="sstat-active">0</div><div class="stat-label">Active</div></div>
+                <div class="stat"><div class="stat-value" id="sstat-completed">0</div><div class="stat-label">Completed</div></div>
+            </div>
+            <div class="org-list" id="series-list">
+                <div class="loading"><div class="spinner"></div>Loading series...</div>
+            </div>
+          </div>
+
+          <!-- Series Detail (shown when a series is selected) -->
+          <div id="series-detail-view" style="display:none;">
+            <div class="detail-header">
+                <button class="back-btn" onclick="backToSeriesList()">&#8592; Back</button>
+                <h2 class="panel-title" id="series-detail-title"></h2>
+                <button class="btn btn-sm btn-secondary" onclick="openEditSeriesModal()">Edit</button>
+            </div>
+            <p id="series-detail-desc" style="color:var(--text-secondary);font-size:0.9rem;margin-bottom:var(--space-sm);"></p>
+            <p id="series-detail-rule" class="series-rule" style="margin-bottom:var(--space-lg);"></p>
+
+            <div class="sub-tabs">
+                <span class="sub-tab active" data-subtab="leaderboard" onclick="switchSubTab('leaderboard')">Leaderboard</span>
+                <span class="sub-tab" data-subtab="s-tournaments" onclick="switchSubTab('s-tournaments')">Tournaments</span>
+                <span class="sub-tab" data-subtab="s-participants" onclick="switchSubTab('s-participants')">Participants</span>
+                <span class="sub-tab" data-subtab="s-points" onclick="switchSubTab('s-points')">Enter Points</span>
+                <span class="sub-tab" data-subtab="s-categories" onclick="switchSubTab('s-categories')">Categories</span>
+            </div>
+
+            <!-- Leaderboard Sub-panel -->
+            <div class="sub-panel active" id="sub-leaderboard">
+                <div class="leaderboard-filters">
+                    <select id="lb-group" onchange="loadStandings()">
+                        <option value="all">All Participants</option>
+                        <option value="boat">All Boats</option>
+                        <option value="private">Private Boats</option>
+                        <option value="charter">Charter Boats</option>
+                        <option value="lady_angler">Lady Angler</option>
+                        <option value="junior_boy">Junior Boy</option>
+                        <option value="junior_girl">Junior Girl</option>
+                    </select>
+                    <select id="lb-category" onchange="loadStandings()">
+                        <option value="">All Categories (Overall)</option>
+                    </select>
+                </div>
+                <div class="table-scroll" id="leaderboard-container">
+                    <div class="loading"><div class="spinner"></div>Loading standings...</div>
+                </div>
+            </div>
+
+            <!-- Tournaments Sub-panel -->
+            <div class="sub-panel" id="sub-s-tournaments">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-md);">
+                    <h3 style="font-size:1rem;color:var(--text-secondary);">Events in Series</h3>
+                    <button class="btn btn-sm btn-primary" onclick="openAddTournamentToSeriesModal()">+ Add Event</button>
+                </div>
+                <div id="series-tournaments-list"></div>
+            </div>
+
+            <!-- Participants Sub-panel -->
+            <div class="sub-panel" id="sub-s-participants">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-md);">
+                    <h3 style="font-size:1rem;color:var(--text-secondary);">Boats & Anglers</h3>
+                    <button class="btn btn-sm btn-primary" onclick="openAddParticipantModal()">+ Add Participant</button>
+                </div>
+                <div id="series-participants-list"></div>
+            </div>
+
+            <!-- Enter Points Sub-panel -->
+            <div class="sub-panel" id="sub-s-points">
+                <h3 style="font-size:1rem;color:var(--text-secondary);margin-bottom:var(--space-md);">Enter Points</h3>
+                <div class="form-row" style="margin-bottom:var(--space-lg);">
+                    <div class="form-group">
+                        <label class="form-label">Select Tournament</label>
+                        <select class="form-input" id="pts-tournament" onchange="loadPointsForEntry()"></select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Select Participant</label>
+                        <select class="form-input" id="pts-participant" onchange="loadPointsForEntry()"></select>
+                    </div>
+                </div>
+                <div id="points-entry-grid"></div>
+            </div>
+
+            <!-- Categories Sub-panel -->
+            <div class="sub-panel" id="sub-s-categories">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:var(--space-md);">
+                    <h3 style="font-size:1rem;color:var(--text-secondary);">Scoring Categories</h3>
+                    <button class="btn btn-sm btn-primary" onclick="openAddCategoryModal()">+ Add Category</button>
+                </div>
+                <div id="series-categories-list"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Series Sidebar -->
+        <div class="panel research-section">
+            <div class="panel-header">
+                <h2 class="panel-title"><span class="icon">🤖</span> AI Research</h2>
+                <span class="ai-badge"><span>✨</span> Powered by Claude</span>
+            </div>
+            <p style="color:var(--text-secondary);margin-bottom:var(--space-md);font-size:0.9rem;">
+                Search for tournament series and billfish circuits across the Southeast coast.
+            </p>
+            <textarea class="research-input" id="s-research-query" placeholder="Example: Find billfish tournament series in North Carolina&#10;&#10;Or: What are the major offshore fishing circuits in the Gulf?"></textarea>
+            <button class="btn btn-primary" style="width:100%;" onclick="showToast('Series research coming soon — use Seed Data to explore!','error')">
+                <span>🔍</span> Research Series
+            </button>
+            <div style="margin-top:var(--space-xl);padding-top:var(--space-lg);border-top:1px solid rgba(255,255,255,0.1);">
+                <p style="color:var(--text-secondary);font-size:0.85rem;margin-bottom:var(--space-md);">
+                    Load sample NC Billfish Series data with 4 tournaments, 13 categories, 6 boats, and sample points.
+                </p>
+                <button class="btn btn-secondary" style="width:100%;" onclick="seedSeriesData()">
+                    🏅 Seed Sample Data (NC Billfish Series)
+                </button>
+            </div>
+        </div>
+      </div><!-- /view-series -->
 
     </main>
     
@@ -1094,7 +1270,7 @@
                         <label class="form-label">State *</label>
                         <select class="form-input" id="tf-state" required>
                             <option value="">Select...</option>
-                            <option value="NC">NC</option><option value="SC">SC</option>
+                            <option value="VA">VA</option><option value="NC">NC</option><option value="SC">SC</option>
                             <option value="GA">GA</option><option value="FL">FL</option>
                             <option value="AL">AL</option><option value="MS">MS</option>
                             <option value="LA">LA</option><option value="TX">TX</option>
@@ -1161,6 +1337,188 @@
                     <button type="button" class="btn btn-secondary" onclick="closeTournamentModal()">Cancel</button>
                     <button type="button" class="btn btn-danger" id="t-delete-btn" style="display:none;" onclick="deleteTournament()">Delete</button>
                     <button type="submit" class="btn btn-primary">Save Tournament</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Series Add/Edit Modal -->
+    <div class="modal-overlay" id="series-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="s-modal-title">Add Series</h3>
+                <button class="modal-close" onclick="closeSeriesModal()">&times;</button>
+            </div>
+            <form id="series-form">
+                <input type="hidden" id="sf-id">
+                <div class="form-group">
+                    <label class="form-label">Series Name *</label>
+                    <input type="text" class="form-input" id="sf-name" required placeholder="e.g., NC Billfish Series">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Year</label>
+                        <input type="number" class="form-input" id="sf-year" placeholder="2026">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Status</label>
+                        <select class="form-input" id="sf-status">
+                            <option value="active">Active</option>
+                            <option value="upcoming">Upcoming</option>
+                            <option value="completed">Completed</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Total Events</label>
+                        <input type="number" class="form-input" id="sf-total-events" placeholder="8">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Best Of (count toward standings)</label>
+                        <input type="number" class="form-input" id="sf-best-of" placeholder="3">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Participation Points (per event)</label>
+                    <input type="number" step="0.1" class="form-input" id="sf-participation-pts" placeholder="25">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-input" id="sf-description" placeholder="Series description..."></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeSeriesModal()">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="s-delete-btn" style="display:none;" onclick="deleteSeries()">Delete</button>
+                    <button type="submit" class="btn btn-primary">Save Series</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Tournament to Series Modal -->
+    <div class="modal-overlay" id="series-tournament-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Event to Series</h3>
+                <button class="modal-close" onclick="closeStModal()">&times;</button>
+            </div>
+            <form id="st-form">
+                <div class="form-group">
+                    <label class="form-label">Event Name *</label>
+                    <input type="text" class="form-input" id="st-event-name" required placeholder="e.g., Hatteras Marlin Club BMR">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Event Number</label>
+                        <input type="number" class="form-input" id="st-event-number" placeholder="1">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Event Date</label>
+                        <input type="date" class="form-input" id="st-event-date">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Link to Existing Tournament (optional)</label>
+                    <select class="form-input" id="st-tournament-id">
+                        <option value="">None</option>
+                    </select>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeStModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Event</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Participant Modal -->
+    <div class="modal-overlay" id="participant-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Participant</h3>
+                <button class="modal-close" onclick="closeParticipantModal()">&times;</button>
+            </div>
+            <form id="participant-form">
+                <div class="form-group">
+                    <label class="form-label">Participant Type</label>
+                    <select class="form-input" id="pf-type" onchange="toggleParticipantFields()">
+                        <option value="boat">Boat</option>
+                        <option value="lady_angler">Lady Angler</option>
+                        <option value="junior_boy">Junior Boy</option>
+                        <option value="junior_girl">Junior Girl</option>
+                    </select>
+                </div>
+                <div id="pf-boat-fields">
+                    <div class="form-group">
+                        <label class="form-label">Boat Name</label>
+                        <input type="text" class="form-input" id="pf-boat-name" placeholder="e.g., Sea Hunter">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label class="form-label">Captain</label>
+                            <input type="text" class="form-input" id="pf-captain" placeholder="Capt. Name">
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Boat Type</label>
+                            <select class="form-input" id="pf-boat-type">
+                                <option value="private">Private</option>
+                                <option value="charter">Charter</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div id="pf-angler-fields" style="display:none;">
+                    <div class="form-group">
+                        <label class="form-label">Angler Name</label>
+                        <input type="text" class="form-input" id="pf-angler-name" placeholder="Full name">
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeParticipantModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Participant</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Add Category Modal -->
+    <div class="modal-overlay" id="category-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title">Add Category</h3>
+                <button class="modal-close" onclick="closeCategoryModal()">&times;</button>
+            </div>
+            <form id="category-form">
+                <div class="form-group">
+                    <label class="form-label">Category Name *</label>
+                    <input type="text" class="form-input" id="cf-name" required placeholder="e.g., Blue Marlin Release">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Group</label>
+                        <select class="form-input" id="cf-group">
+                            <option value="Release">Release</option>
+                            <option value="Big Fish">Big Fish</option>
+                            <option value="Special">Special</option>
+                            <option value="Boat">Boat</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Scoring Type</label>
+                        <select class="form-input" id="cf-scoring">
+                            <option value="points">Points</option>
+                            <option value="weight">Weight</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Sort Order</label>
+                    <input type="number" class="form-input" id="cf-sort" value="0">
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeCategoryModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Add Category</button>
                 </div>
             </form>
         </div>
@@ -1571,6 +1929,7 @@
             if (link) link.classList.add('active');
 
             if (view === 'tournaments') loadTournaments();
+            if (view === 'series') loadSeriesList();
         }
 
         // ============================================================================
@@ -1895,9 +2254,563 @@
         }
 
         // ============================================================================
+        // Series State & API
+        // ============================================================================
+
+        let seriesList = [];
+        let currentSeries = null;  // full detail of selected series
+        let currentSeriesId = null;
+        let standingsData = null;
+
+        async function loadSeriesList() {
+            try {
+                const resp = await fetch(`${API_BASE}/api/series`);
+                seriesList = await resp.json();
+                renderSeriesList();
+            } catch (e) {
+                showToast('Failed to load series', 'error');
+            }
+        }
+
+        function renderSeriesList() {
+            const total = seriesList.length;
+            const active = seriesList.filter(s => s.status === 'active').length;
+            const completed = seriesList.filter(s => s.status === 'completed').length;
+            document.getElementById('sstat-total').textContent = total;
+            document.getElementById('sstat-active').textContent = active;
+            document.getElementById('sstat-completed').textContent = completed;
+
+            const el = document.getElementById('series-list');
+            if (seriesList.length === 0) {
+                el.innerHTML = `<div class="empty-state">
+                    <div class="empty-state-icon">🏅</div>
+                    <p>No tournament series found</p>
+                    <p style="font-size:0.85rem;margin-top:0.5rem;">Click "Seed Sample Data" on the right to load the NC Billfish Series, or add your own.</p>
+                </div>`;
+                return;
+            }
+            el.innerHTML = seriesList.map(s => `
+                <div class="org-card" onclick="openSeriesDetail(${s.id})">
+                    <div class="org-card-header">
+                        <span class="org-name">${escapeHtml(s.name)}</span>
+                        <span class="series-status ${s.status}">${s.status}</span>
+                    </div>
+                    <div class="org-meta">
+                        ${s.year ? `<span>📅 ${s.year}</span>` : ''}
+                        <span class="series-rule">Best ${s.best_of || '?'} of ${s.total_events || '?'}</span>
+                        <span>👥 ${s.participant_count || 0} participants</span>
+                        <span>🏆 ${s.tournament_count || 0} events</span>
+                    </div>
+                    ${s.description ? `<p class="org-description">${escapeHtml(s.description)}</p>` : ''}
+                </div>
+            `).join('');
+        }
+
+        async function openSeriesDetail(id) {
+            currentSeriesId = id;
+            try {
+                const resp = await fetch(`${API_BASE}/api/series/${id}`);
+                currentSeries = await resp.json();
+                document.getElementById('series-list-view').style.display = 'none';
+                document.getElementById('series-detail-view').style.display = 'block';
+                renderSeriesDetail();
+                switchSubTab('leaderboard');
+            } catch (e) {
+                showToast('Failed to load series', 'error');
+            }
+        }
+
+        function backToSeriesList() {
+            currentSeriesId = null;
+            currentSeries = null;
+            document.getElementById('series-detail-view').style.display = 'none';
+            document.getElementById('series-list-view').style.display = 'block';
+            loadSeriesList();
+        }
+
+        function renderSeriesDetail() {
+            if (!currentSeries) return;
+            const s = currentSeries;
+            document.getElementById('series-detail-title').innerHTML = `<span class="icon">🏅</span> ${escapeHtml(s.name)} <span class="series-status ${s.status}" style="font-size:0.7rem;margin-left:8px;">${s.status}</span>`;
+            document.getElementById('series-detail-desc').textContent = s.description || '';
+            document.getElementById('series-detail-rule').textContent = s.best_of && s.total_events
+                ? `Best ${s.best_of} of ${s.total_events} tournaments • ${s.participation_points || 0} participation points per event • ${s.year || ''}`
+                : `${s.year || ''}`;
+
+            renderSeriesTournaments();
+            renderSeriesParticipants();
+            renderSeriesCategories();
+            populatePointsDropdowns();
+            populateLbCategoryFilter();
+            loadStandings();
+        }
+
+        function switchSubTab(tab) {
+            document.querySelectorAll('.sub-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.sub-panel').forEach(p => p.classList.remove('active'));
+            const tabEl = document.querySelector(`.sub-tab[data-subtab="${tab}"]`);
+            if (tabEl) tabEl.classList.add('active');
+            const panelEl = document.getElementById('sub-' + tab);
+            if (panelEl) panelEl.classList.add('active');
+        }
+
+        // ----- Series CRUD -----
+
+        function openSeriesModal() {
+            currentSeriesId = null;
+            document.getElementById('s-modal-title').textContent = 'Add Series';
+            document.getElementById('s-delete-btn').style.display = 'none';
+            document.getElementById('series-form').reset();
+            document.getElementById('sf-id').value = '';
+            document.getElementById('series-modal').classList.add('active');
+        }
+
+        function openEditSeriesModal() {
+            if (!currentSeries) return;
+            const s = currentSeries;
+            document.getElementById('s-modal-title').textContent = 'Edit Series';
+            document.getElementById('s-delete-btn').style.display = 'block';
+            document.getElementById('sf-id').value = s.id;
+            document.getElementById('sf-name').value = s.name || '';
+            document.getElementById('sf-year').value = s.year || '';
+            document.getElementById('sf-status').value = s.status || 'active';
+            document.getElementById('sf-total-events').value = s.total_events || '';
+            document.getElementById('sf-best-of').value = s.best_of || '';
+            document.getElementById('sf-participation-pts').value = s.participation_points || '';
+            document.getElementById('sf-description').value = s.description || '';
+            document.getElementById('series-modal').classList.add('active');
+        }
+
+        function closeSeriesModal() {
+            document.getElementById('series-modal').classList.remove('active');
+        }
+
+        async function handleSeriesSubmit(e) {
+            e.preventDefault();
+            const id = document.getElementById('sf-id').value;
+            const data = {
+                name: document.getElementById('sf-name').value,
+                year: parseInt(document.getElementById('sf-year').value) || null,
+                status: document.getElementById('sf-status').value,
+                total_events: parseInt(document.getElementById('sf-total-events').value) || null,
+                best_of: parseInt(document.getElementById('sf-best-of').value) || null,
+                participation_points: parseFloat(document.getElementById('sf-participation-pts').value) || 0,
+                description: document.getElementById('sf-description').value,
+            };
+            const method = id ? 'PUT' : 'POST';
+            const url = id ? `${API_BASE}/api/series/${id}` : `${API_BASE}/api/series`;
+            try {
+                const resp = await fetch(url, { method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(data) });
+                if (!resp.ok) throw new Error('Failed');
+                showToast(id ? 'Series updated' : 'Series created');
+                closeSeriesModal();
+                if (id && currentSeriesId == id) {
+                    openSeriesDetail(parseInt(id));
+                } else {
+                    loadSeriesList();
+                }
+            } catch (e) {
+                showToast('Failed to save series', 'error');
+            }
+        }
+
+        async function deleteSeries() {
+            const id = document.getElementById('sf-id').value || currentSeriesId;
+            if (!id) return;
+            if (!confirm('Delete this series and all its data?')) return;
+            try {
+                await fetch(`${API_BASE}/api/series/${id}`, { method: 'DELETE' });
+                showToast('Series deleted');
+                closeSeriesModal();
+                backToSeriesList();
+            } catch (e) {
+                showToast('Failed to delete', 'error');
+            }
+        }
+
+        // ----- Series Tournaments -----
+
+        function renderSeriesTournaments() {
+            const el = document.getElementById('series-tournaments-list');
+            const ts = currentSeries?.tournaments || [];
+            if (ts.length === 0) {
+                el.innerHTML = '<p style="color:var(--text-secondary);font-size:0.9rem;">No events added yet.</p>';
+                return;
+            }
+            el.innerHTML = `<table class="mini-table"><thead><tr><th>#</th><th>Event</th><th>Date</th><th></th></tr></thead><tbody>${
+                ts.map(t => `<tr>
+                    <td>${t.event_number || '-'}</td>
+                    <td>${escapeHtml(t.event_name)}</td>
+                    <td>${t.event_date ? formatDate(t.event_date) : '-'}</td>
+                    <td><button class="btn btn-sm btn-danger" onclick="removeSeriesEvent(${t.id})">Remove</button></td>
+                </tr>`).join('')
+            }</tbody></table>`;
+        }
+
+        function openAddTournamentToSeriesModal() {
+            document.getElementById('st-form').reset();
+            // populate tournament link dropdown
+            const sel = document.getElementById('st-tournament-id');
+            sel.innerHTML = '<option value="">None (standalone event)</option>';
+            // We'll load available tournaments
+            fetch(`${API_BASE}/api/tournaments?limit=500`).then(r => r.json()).then(list => {
+                list.forEach(t => {
+                    sel.innerHTML += `<option value="${t.id}">${escapeHtml(t.name)} (${t.event_date})</option>`;
+                });
+            });
+            document.getElementById('series-tournament-modal').classList.add('active');
+        }
+
+        function closeStModal() {
+            document.getElementById('series-tournament-modal').classList.remove('active');
+        }
+
+        async function handleStSubmit(e) {
+            e.preventDefault();
+            const data = {
+                event_name: document.getElementById('st-event-name').value,
+                event_number: parseInt(document.getElementById('st-event-number').value) || null,
+                event_date: document.getElementById('st-event-date').value || null,
+                tournament_id: parseInt(document.getElementById('st-tournament-id').value) || null,
+            };
+            try {
+                const resp = await fetch(`${API_BASE}/api/series/${currentSeriesId}/tournaments`, {
+                    method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data)
+                });
+                if (!resp.ok) throw new Error('Failed');
+                showToast('Event added');
+                closeStModal();
+                openSeriesDetail(currentSeriesId);
+            } catch (e) {
+                showToast('Failed to add event', 'error');
+            }
+        }
+
+        async function removeSeriesEvent(eventId) {
+            if (!confirm('Remove this event from the series?')) return;
+            try {
+                await fetch(`${API_BASE}/api/series/${currentSeriesId}/tournaments/${eventId}`, { method: 'DELETE' });
+                showToast('Event removed');
+                openSeriesDetail(currentSeriesId);
+            } catch (e) {
+                showToast('Failed to remove', 'error');
+            }
+        }
+
+        // ----- Series Participants -----
+
+        function renderSeriesParticipants() {
+            const el = document.getElementById('series-participants-list');
+            const ps = currentSeries?.participants || [];
+            if (ps.length === 0) {
+                el.innerHTML = '<p style="color:var(--text-secondary);font-size:0.9rem;">No participants registered yet.</p>';
+                return;
+            }
+            el.innerHTML = `<table class="mini-table"><thead><tr><th>Name</th><th>Type</th><th>Captain</th><th></th></tr></thead><tbody>${
+                ps.map(p => {
+                    const name = p.boat_name || p.angler_name || 'Unknown';
+                    const typeLabel = p.participant_type === 'boat' ? (p.boat_type === 'charter' ? 'Charter' : 'Private') : p.participant_type.replace('_', ' ');
+                    return `<tr>
+                        <td>${escapeHtml(name)}</td>
+                        <td><span class="org-type-badge">${typeLabel}</span></td>
+                        <td>${escapeHtml(p.captain || '-')}</td>
+                        <td><button class="btn btn-sm btn-danger" onclick="removeParticipant(${p.id})">Remove</button></td>
+                    </tr>`;
+                }).join('')
+            }</tbody></table>`;
+        }
+
+        function openAddParticipantModal() {
+            document.getElementById('participant-form').reset();
+            document.getElementById('pf-type').value = 'boat';
+            toggleParticipantFields();
+            document.getElementById('participant-modal').classList.add('active');
+        }
+
+        function closeParticipantModal() {
+            document.getElementById('participant-modal').classList.remove('active');
+        }
+
+        function toggleParticipantFields() {
+            const type = document.getElementById('pf-type').value;
+            const isBoat = type === 'boat';
+            document.getElementById('pf-boat-fields').style.display = isBoat ? 'block' : 'none';
+            document.getElementById('pf-angler-fields').style.display = isBoat ? 'none' : 'block';
+        }
+
+        async function handleParticipantSubmit(e) {
+            e.preventDefault();
+            const type = document.getElementById('pf-type').value;
+            const data = {
+                participant_type: type,
+                boat_name: type === 'boat' ? document.getElementById('pf-boat-name').value : null,
+                captain: type === 'boat' ? document.getElementById('pf-captain').value : null,
+                boat_type: type === 'boat' ? document.getElementById('pf-boat-type').value : null,
+                angler_name: type !== 'boat' ? document.getElementById('pf-angler-name').value : null,
+            };
+            try {
+                const resp = await fetch(`${API_BASE}/api/series/${currentSeriesId}/participants`, {
+                    method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data)
+                });
+                if (!resp.ok) throw new Error('Failed');
+                showToast('Participant added');
+                closeParticipantModal();
+                openSeriesDetail(currentSeriesId);
+            } catch (e) {
+                showToast('Failed to add participant', 'error');
+            }
+        }
+
+        async function removeParticipant(pid) {
+            if (!confirm('Remove this participant?')) return;
+            try {
+                await fetch(`${API_BASE}/api/series/${currentSeriesId}/participants/${pid}`, { method: 'DELETE' });
+                showToast('Participant removed');
+                openSeriesDetail(currentSeriesId);
+            } catch (e) {
+                showToast('Failed to remove', 'error');
+            }
+        }
+
+        // ----- Series Categories -----
+
+        function renderSeriesCategories() {
+            const el = document.getElementById('series-categories-list');
+            const cs = currentSeries?.categories || [];
+            if (cs.length === 0) {
+                el.innerHTML = '<p style="color:var(--text-secondary);font-size:0.9rem;">No categories defined yet.</p>';
+                return;
+            }
+            el.innerHTML = `<table class="mini-table"><thead><tr><th>Category</th><th>Group</th><th>Scoring</th><th></th></tr></thead><tbody>${
+                cs.map(c => `<tr>
+                    <td>${escapeHtml(c.name)}</td>
+                    <td><span class="org-type-badge">${escapeHtml(c.category_group || '-')}</span></td>
+                    <td>${c.scoring_type}</td>
+                    <td><button class="btn btn-sm btn-danger" onclick="removeCategory(${c.id})">Remove</button></td>
+                </tr>`).join('')
+            }</tbody></table>`;
+        }
+
+        function openAddCategoryModal() {
+            document.getElementById('category-form').reset();
+            document.getElementById('category-modal').classList.add('active');
+        }
+
+        function closeCategoryModal() {
+            document.getElementById('category-modal').classList.remove('active');
+        }
+
+        async function handleCategorySubmit(e) {
+            e.preventDefault();
+            const data = {
+                name: document.getElementById('cf-name').value,
+                category_group: document.getElementById('cf-group').value,
+                scoring_type: document.getElementById('cf-scoring').value,
+                sort_order: parseInt(document.getElementById('cf-sort').value) || 0,
+            };
+            try {
+                const resp = await fetch(`${API_BASE}/api/series/${currentSeriesId}/categories`, {
+                    method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(data)
+                });
+                if (!resp.ok) throw new Error('Failed');
+                showToast('Category added');
+                closeCategoryModal();
+                openSeriesDetail(currentSeriesId);
+            } catch (e) {
+                showToast('Failed to add category', 'error');
+            }
+        }
+
+        async function removeCategory(cid) {
+            if (!confirm('Remove this category?')) return;
+            try {
+                await fetch(`${API_BASE}/api/series/${currentSeriesId}/categories/${cid}`, { method: 'DELETE' });
+                showToast('Category removed');
+                openSeriesDetail(currentSeriesId);
+            } catch (e) {
+                showToast('Failed to remove', 'error');
+            }
+        }
+
+        // ----- Points Entry -----
+
+        function populatePointsDropdowns() {
+            const tSel = document.getElementById('pts-tournament');
+            const pSel = document.getElementById('pts-participant');
+            const ts = currentSeries?.tournaments || [];
+            const ps = currentSeries?.participants || [];
+            tSel.innerHTML = '<option value="">Select tournament...</option>' + ts.map(t =>
+                `<option value="${t.id}">${escapeHtml(t.event_name)}</option>`
+            ).join('');
+            pSel.innerHTML = '<option value="">Select participant...</option>' + ps.map(p =>
+                `<option value="${p.id}">${escapeHtml(p.boat_name || p.angler_name || 'Unknown')}</option>`
+            ).join('');
+            document.getElementById('points-entry-grid').innerHTML = '<p style="color:var(--text-secondary);font-size:0.9rem;">Select a tournament and participant to enter points.</p>';
+        }
+
+        async function loadPointsForEntry() {
+            const tid = document.getElementById('pts-tournament').value;
+            const pid = document.getElementById('pts-participant').value;
+            const grid = document.getElementById('points-entry-grid');
+            if (!tid || !pid) {
+                grid.innerHTML = '<p style="color:var(--text-secondary);font-size:0.9rem;">Select both a tournament and participant.</p>';
+                return;
+            }
+            const cats = currentSeries?.categories || [];
+            if (cats.length === 0) {
+                grid.innerHTML = '<p style="color:var(--text-secondary);font-size:0.9rem;">No categories defined. Add categories first.</p>';
+                return;
+            }
+            // Fetch existing points for this combo
+            let existing = [];
+            try {
+                const resp = await fetch(`${API_BASE}/api/series/${currentSeriesId}/points?series_tournament_id=${tid}&participant_id=${pid}`);
+                existing = await resp.json();
+            } catch (e) {}
+
+            const existingMap = {};
+            existing.forEach(p => { existingMap[p.category_id] = p; });
+
+            grid.innerHTML = `
+                <div class="points-grid">
+                    ${cats.map(c => {
+                        const ex = existingMap[c.id];
+                        return `
+                            <label>${escapeHtml(c.name)} <span style="color:var(--text-secondary);font-size:0.75rem;">(${c.category_group || ''})</span></label>
+                            <input type="number" step="0.1" id="pts-cat-${c.id}" value="${ex ? ex.points : ''}" placeholder="0">
+                        `;
+                    }).join('')}
+                </div>
+                <button class="btn btn-primary" style="width:100%;margin-top:var(--space-md);" onclick="savePoints()">Save Points</button>
+            `;
+        }
+
+        async function savePoints() {
+            const tid = document.getElementById('pts-tournament').value;
+            const pid = document.getElementById('pts-participant').value;
+            if (!tid || !pid) return;
+            const cats = currentSeries?.categories || [];
+            const points = [];
+            cats.forEach(c => {
+                const val = parseFloat(document.getElementById(`pts-cat-${c.id}`).value);
+                if (!isNaN(val) && val !== 0) {
+                    points.push({
+                        series_tournament_id: parseInt(tid),
+                        participant_id: parseInt(pid),
+                        category_id: c.id,
+                        points: val,
+                    });
+                }
+            });
+            if (points.length === 0) {
+                showToast('No points to save', 'error');
+                return;
+            }
+            try {
+                const resp = await fetch(`${API_BASE}/api/series/${currentSeriesId}/points`, {
+                    method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(points)
+                });
+                if (!resp.ok) throw new Error('Failed');
+                const result = await resp.json();
+                showToast(`Saved ${result.saved} point entries`);
+            } catch (e) {
+                showToast('Failed to save points', 'error');
+            }
+        }
+
+        // ----- Leaderboard -----
+
+        function populateLbCategoryFilter() {
+            const sel = document.getElementById('lb-category');
+            const cats = currentSeries?.categories || [];
+            sel.innerHTML = '<option value="">All Categories (Overall)</option>' + cats.map(c =>
+                `<option value="${c.id}">${escapeHtml(c.name)}</option>`
+            ).join('');
+        }
+
+        async function loadStandings() {
+            if (!currentSeriesId) return;
+            const group = document.getElementById('lb-group').value;
+            const catId = document.getElementById('lb-category').value;
+            const container = document.getElementById('leaderboard-container');
+            container.innerHTML = '<div class="loading"><div class="spinner"></div>Loading standings...</div>';
+
+            let url = `${API_BASE}/api/series/${currentSeriesId}/standings?group=${group}`;
+            if (catId) url += `&category_id=${catId}`;
+
+            try {
+                const resp = await fetch(url);
+                standingsData = await resp.json();
+                renderLeaderboard();
+            } catch (e) {
+                container.innerHTML = '<p style="color:var(--coral);">Failed to load standings</p>';
+            }
+        }
+
+        function renderLeaderboard() {
+            const container = document.getElementById('leaderboard-container');
+            if (!standingsData || !standingsData.standings || standingsData.standings.length === 0) {
+                container.innerHTML = '<div class="empty-state"><p>No standings data yet</p><p style="font-size:0.85rem;margin-top:0.5rem;">Add participants and enter points to see the leaderboard.</p></div>';
+                return;
+            }
+            const ts = standingsData.tournaments || [];
+            const standings = standingsData.standings;
+            const bestOf = standingsData.best_of || 999;
+
+            const rankIcons = {1: ' 🥇', 2: ' 🥈', 3: ' 🥉'};
+
+            let html = `<table class="leaderboard-table"><thead><tr>
+                <th>Rank</th><th>Boat/Angler</th>`;
+            ts.forEach(t => {
+                const shortName = t.event_name.length > 15 ? t.event_name.substring(0, 15) + '...' : t.event_name;
+                html += `<th title="${escapeHtml(t.event_name)}">${escapeHtml(shortName)}</th>`;
+            });
+            html += `<th>Best ${bestOf}</th><th>Total</th></tr></thead><tbody>`;
+
+            standings.forEach(s => {
+                const rankClass = s.rank <= 3 ? ` class="rank-${s.rank}"` : '';
+                html += `<tr${rankClass}>`;
+                html += `<td>${s.rank}${rankIcons[s.rank] || ''}</td>`;
+                html += `<td><strong>${escapeHtml(s.display_name)}</strong>`;
+                if (s.participant?.captain) html += `<br><span style="font-size:0.75rem;color:var(--text-secondary);">${escapeHtml(s.participant.captain)}</span>`;
+                html += `</td>`;
+
+                ts.forEach(t => {
+                    const td = s.per_tournament[String(t.id)];
+                    if (td && td.points > 0) {
+                        const cls = td.counted ? 'counted' : 'not-counted';
+                        html += `<td class="${cls}">${td.points}</td>`;
+                    } else {
+                        html += `<td class="not-counted">-</td>`;
+                    }
+                });
+
+                html += `<td class="best-of-col">${s.best_of_score}</td>`;
+                html += `<td>${s.aggregate}</td>`;
+                html += `</tr>`;
+            });
+
+            html += `</tbody></table>`;
+            container.innerHTML = html;
+        }
+
+        // ----- Seed -----
+
+        async function seedSeriesData() {
+            try {
+                const resp = await fetch(`${API_BASE}/api/series/seed`, { method: 'POST' });
+                const result = await resp.json();
+                showToast(result.message);
+                loadSeriesList();
+            } catch (e) {
+                showToast('Failed to seed', 'error');
+            }
+        }
+
+        // ============================================================================
         // Event Listeners
         // ============================================================================
-        
+
         document.getElementById('org-form').addEventListener('submit', handleFormSubmit);
         
         document.getElementById('search-input').addEventListener('input', debounce(applyFilters, 300));
@@ -1912,6 +2825,12 @@
         document.getElementById('t-date-from').addEventListener('change', applyTournamentFilters);
         document.getElementById('t-date-to').addEventListener('change', applyTournamentFilters);
 
+        // Series form & modal listeners
+        document.getElementById('series-form').addEventListener('submit', handleSeriesSubmit);
+        document.getElementById('st-form').addEventListener('submit', handleStSubmit);
+        document.getElementById('participant-form').addEventListener('submit', handleParticipantSubmit);
+        document.getElementById('category-form').addEventListener('submit', handleCategorySubmit);
+
         // Close modals on overlay click
         document.getElementById('modal').addEventListener('click', (e) => {
             if (e.target.id === 'modal') closeModal();
@@ -1919,10 +2838,22 @@
         document.getElementById('tournament-modal').addEventListener('click', (e) => {
             if (e.target.id === 'tournament-modal') closeTournamentModal();
         });
+        document.getElementById('series-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'series-modal') closeSeriesModal();
+        });
+        document.getElementById('series-tournament-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'series-tournament-modal') closeStModal();
+        });
+        document.getElementById('participant-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'participant-modal') closeParticipantModal();
+        });
+        document.getElementById('category-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'category-modal') closeCategoryModal();
+        });
 
         // Escape key closes modals
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') { closeModal(); closeTournamentModal(); }
+            if (e.key === 'Escape') { closeModal(); closeTournamentModal(); closeSeriesModal(); closeStModal(); closeParticipantModal(); closeCategoryModal(); }
         });
         
         function debounce(fn, delay) {
