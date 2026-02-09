@@ -1,0 +1,1943 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fishing Organizations Database</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            /* Deep ocean color palette */
+            --ocean-deep: #0a1628;
+            --ocean-mid: #1a3a5c;
+            --ocean-light: #2d5a7b;
+            --seafoam: #4ecdc4;
+            --coral: #ff6b6b;
+            --sand: #f4e8d1;
+            --pearl: #fafafa;
+            --gold: #d4a574;
+            
+            /* Functional colors */
+            --bg-primary: var(--ocean-deep);
+            --bg-secondary: var(--ocean-mid);
+            --bg-card: rgba(26, 58, 92, 0.6);
+            --text-primary: var(--pearl);
+            --text-secondary: rgba(250, 250, 250, 0.7);
+            --accent: var(--seafoam);
+            --accent-warm: var(--coral);
+            
+            /* Typography */
+            --font-display: 'Playfair Display', Georgia, serif;
+            --font-body: 'Source Sans 3', -apple-system, sans-serif;
+            
+            /* Spacing */
+            --space-xs: 0.25rem;
+            --space-sm: 0.5rem;
+            --space-md: 1rem;
+            --space-lg: 1.5rem;
+            --space-xl: 2rem;
+            --space-2xl: 3rem;
+            
+            /* Borders & Shadows */
+            --radius-sm: 4px;
+            --radius-md: 8px;
+            --radius-lg: 16px;
+            --shadow-soft: 0 4px 20px rgba(0, 0, 0, 0.3);
+            --shadow-glow: 0 0 30px rgba(78, 205, 196, 0.2);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: var(--font-body);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        
+        /* Animated ocean background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(ellipse at 20% 80%, rgba(78, 205, 196, 0.1) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 20%, rgba(45, 90, 123, 0.3) 0%, transparent 50%),
+                radial-gradient(ellipse at 50% 50%, rgba(26, 58, 92, 0.5) 0%, transparent 70%),
+                linear-gradient(180deg, var(--ocean-deep) 0%, #0d1f35 100%);
+            z-index: -1;
+            animation: oceanShift 20s ease-in-out infinite;
+        }
+        
+        @keyframes oceanShift {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
+        }
+        
+        /* Header */
+        header {
+            padding: var(--space-xl) var(--space-2xl);
+            border-bottom: 1px solid rgba(78, 205, 196, 0.2);
+            backdrop-filter: blur(10px);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(10, 22, 40, 0.8);
+        }
+        
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+        }
+        
+        .logo-icon {
+            width: 48px;
+            height: 48px;
+            background: linear-gradient(135deg, var(--seafoam), var(--ocean-light));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .logo h1 {
+            font-family: var(--font-display);
+            font-size: 1.75rem;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, var(--pearl), var(--seafoam));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: var(--space-lg);
+        }
+        
+        .nav-link {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-sm);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            color: var(--accent);
+            background: rgba(78, 205, 196, 0.1);
+        }
+        
+        /* Main Layout */
+        main {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--space-2xl);
+        }
+
+        .view {
+            display: none;
+        }
+
+        .view.active {
+            display: grid;
+            grid-template-columns: 1fr 380px;
+            gap: var(--space-xl);
+        }
+
+        /* Tournament-specific styles */
+        .tournament-upcoming {
+            border-left: 3px solid var(--seafoam);
+        }
+
+        .tournament-past {
+            opacity: 0.55;
+        }
+
+        .species-badge {
+            font-size: 0.7rem;
+            padding: var(--space-xs) var(--space-sm);
+            background: rgba(212, 165, 116, 0.25);
+            color: var(--gold);
+            border-radius: 20px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .tournament-date {
+            font-size: 0.85rem;
+            color: var(--seafoam);
+            font-weight: 600;
+        }
+
+        .tournament-fee {
+            font-size: 0.85rem;
+            color: var(--gold);
+            font-weight: 500;
+        }
+
+        input[type="date"].search-input {
+            color: var(--text-primary);
+            max-width: 180px;
+        }
+
+        input[type="date"].search-input::-webkit-calendar-picker-indicator {
+            filter: invert(0.7);
+        }
+        
+        /* Panels */
+        .panel {
+            background: var(--bg-card);
+            border: 1px solid rgba(78, 205, 196, 0.15);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl);
+            backdrop-filter: blur(10px);
+        }
+        
+        .panel-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-lg);
+            padding-bottom: var(--space-md);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .panel-title {
+            font-family: var(--font-display);
+            font-size: 1.25rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+        
+        .panel-title .icon {
+            color: var(--accent);
+        }
+        
+        /* Search & Filters */
+        .search-bar {
+            display: flex;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-lg);
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: var(--space-md) var(--space-lg);
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(78, 205, 196, 0.2);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            font-size: 1rem;
+            transition: all 0.2s ease;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: var(--shadow-glow);
+        }
+        
+        .search-input::placeholder {
+            color: var(--text-secondary);
+        }
+        
+        select.search-input {
+            cursor: pointer;
+            max-width: 180px;
+        }
+        
+        /* Buttons */
+        .btn {
+            padding: var(--space-md) var(--space-lg);
+            border: none;
+            border-radius: var(--radius-md);
+            font-family: var(--font-body);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-sm);
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, var(--seafoam), #3db9b0);
+            color: var(--ocean-deep);
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 20px rgba(78, 205, 196, 0.4);
+        }
+        
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+        
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+        }
+        
+        .btn-danger {
+            background: rgba(255, 107, 107, 0.2);
+            color: var(--coral);
+            border: 1px solid rgba(255, 107, 107, 0.3);
+        }
+        
+        .btn-danger:hover {
+            background: rgba(255, 107, 107, 0.3);
+        }
+        
+        .btn-sm {
+            padding: var(--space-xs) var(--space-sm);
+            font-size: 0.8rem;
+        }
+        
+        /* Organizations List */
+        .org-list {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-md);
+            max-height: 600px;
+            overflow-y: auto;
+        }
+        
+        .org-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .org-list::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 3px;
+        }
+        
+        .org-list::-webkit-scrollbar-thumb {
+            background: var(--ocean-light);
+            border-radius: 3px;
+        }
+        
+        .org-card {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-md);
+            padding: var(--space-lg);
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+        
+        .org-card:hover {
+            background: rgba(78, 205, 196, 0.1);
+            border-color: rgba(78, 205, 196, 0.3);
+            transform: translateX(4px);
+        }
+        
+        .org-card.selected {
+            background: rgba(78, 205, 196, 0.15);
+            border-color: var(--accent);
+        }
+        
+        .org-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: var(--space-sm);
+        }
+        
+        .org-name {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+        
+        .org-type-badge {
+            font-size: 0.7rem;
+            padding: var(--space-xs) var(--space-sm);
+            background: rgba(78, 205, 196, 0.2);
+            color: var(--accent);
+            border-radius: 20px;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .org-meta {
+            display: flex;
+            gap: var(--space-md);
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-sm);
+        }
+        
+        .org-description {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        
+        /* AI Research Panel */
+        .research-section {
+            position: sticky;
+            top: 100px;
+        }
+        
+        .ai-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-xs);
+            font-size: 0.75rem;
+            padding: var(--space-xs) var(--space-sm);
+            background: linear-gradient(135deg, rgba(78, 205, 196, 0.2), rgba(212, 165, 116, 0.2));
+            border-radius: 20px;
+            color: var(--gold);
+            font-weight: 500;
+        }
+        
+        .research-input {
+            width: 100%;
+            min-height: 100px;
+            padding: var(--space-md);
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(78, 205, 196, 0.2);
+            border-radius: var(--radius-md);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            resize: vertical;
+            margin-bottom: var(--space-md);
+        }
+        
+        .research-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        .research-filters {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-sm);
+            margin-bottom: var(--space-md);
+        }
+        
+        .research-filters select {
+            padding: var(--space-sm) var(--space-md);
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(78, 205, 196, 0.2);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            cursor: pointer;
+        }
+        
+        .research-results {
+            margin-top: var(--space-lg);
+            padding-top: var(--space-lg);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .result-item {
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: var(--radius-md);
+            padding: var(--space-md);
+            margin-bottom: var(--space-sm);
+        }
+        
+        .result-item h4 {
+            font-family: var(--font-display);
+            font-size: 1rem;
+            margin-bottom: var(--space-xs);
+            color: var(--text-primary);
+        }
+        
+        .result-item p {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-sm);
+        }
+        
+        .result-actions {
+            display: flex;
+            gap: var(--space-sm);
+        }
+        
+        /* Loading State */
+        .loading {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: var(--space-xl);
+            color: var(--text-secondary);
+        }
+        
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 2px solid rgba(78, 205, 196, 0.3);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-right: var(--space-sm);
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Stats Bar */
+        .stats-bar {
+            display: flex;
+            gap: var(--space-lg);
+            padding: var(--space-md) var(--space-lg);
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: var(--radius-md);
+            margin-bottom: var(--space-lg);
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+        
+        .stat-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        /* Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(4px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .modal-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal {
+            background: var(--bg-secondary);
+            border: 1px solid rgba(78, 205, 196, 0.2);
+            border-radius: var(--radius-lg);
+            padding: var(--space-xl);
+            width: 90%;
+            max-width: 600px;
+            max-height: 90vh;
+            overflow-y: auto;
+            transform: translateY(20px);
+            transition: transform 0.3s ease;
+        }
+        
+        .modal-overlay.active .modal {
+            transform: translateY(0);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-lg);
+        }
+        
+        .modal-title {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+        }
+        
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: var(--space-sm);
+        }
+        
+        .modal-close:hover {
+            color: var(--text-primary);
+        }
+        
+        .form-group {
+            margin-bottom: var(--space-lg);
+        }
+        
+        .form-label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: var(--space-xs);
+        }
+        
+        .form-input {
+            width: 100%;
+            padding: var(--space-md);
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(78, 205, 196, 0.2);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+        }
+        
+        .form-input:focus {
+            outline: none;
+            border-color: var(--accent);
+        }
+        
+        textarea.form-input {
+            min-height: 80px;
+            resize: vertical;
+        }
+        
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-md);
+        }
+        
+        .modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: var(--space-md);
+            margin-top: var(--space-xl);
+            padding-top: var(--space-lg);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: var(--space-2xl);
+            color: var(--text-secondary);
+        }
+        
+        .empty-state-icon {
+            font-size: 3rem;
+            margin-bottom: var(--space-md);
+            opacity: 0.5;
+        }
+        
+        /* Toast Notifications */
+        .toast-container {
+            position: fixed;
+            bottom: var(--space-xl);
+            right: var(--space-xl);
+            z-index: 1001;
+        }
+        
+        .toast {
+            background: var(--bg-secondary);
+            border: 1px solid rgba(78, 205, 196, 0.3);
+            border-radius: var(--radius-md);
+            padding: var(--space-md) var(--space-lg);
+            margin-top: var(--space-sm);
+            box-shadow: var(--shadow-soft);
+            animation: slideIn 0.3s ease;
+        }
+        
+        .toast.success {
+            border-color: var(--seafoam);
+        }
+        
+        .toast.error {
+            border-color: var(--coral);
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .view.active {
+                grid-template-columns: 1fr;
+            }
+            
+            .research-section {
+                position: static;
+            }
+        }
+        
+        @media (max-width: 768px) {
+            header {
+                padding: var(--space-lg);
+            }
+            
+            .header-content {
+                flex-direction: column;
+                gap: var(--space-md);
+            }
+            
+            main {
+                padding: var(--space-lg);
+            }
+            
+            .search-bar {
+                flex-direction: column;
+            }
+            
+            select.search-input {
+                max-width: 100%;
+            }
+            
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <div class="logo-icon">🐟</div>
+                <h1>Fishing Organizations Database</h1>
+            </div>
+            <nav class="nav-links">
+                <span class="nav-link active" data-view="browse" onclick="switchView('browse')">Browse</span>
+                <span class="nav-link" data-view="tournaments" onclick="switchView('tournaments')">Tournaments</span>
+                <span class="nav-link" onclick="exportData()">Export</span>
+            </nav>
+        </div>
+    </header>
+    
+    <main>
+      <!-- ===== Browse View ===== -->
+      <div id="view-browse" class="view active">
+        <!-- Organizations List Panel -->
+        <div class="panel">
+            <div class="panel-header">
+                <h2 class="panel-title">
+                    <span class="icon">📋</span>
+                    Organizations
+                </h2>
+                <button class="btn btn-primary" onclick="openAddModal()">
+                    <span>+</span> Add New
+                </button>
+            </div>
+            
+            <div class="stats-bar" id="stats">
+                <div class="stat">
+                    <div class="stat-value" id="stat-total">0</div>
+                    <div class="stat-label">Total</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="stat-states">0</div>
+                    <div class="stat-label">States</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="stat-types">0</div>
+                    <div class="stat-label">Types</div>
+                </div>
+            </div>
+            
+            <div class="search-bar">
+                <input type="text" class="search-input" id="search-input" placeholder="Search organizations...">
+                <select class="search-input" id="filter-state">
+                    <option value="">All States</option>
+                </select>
+                <select class="search-input" id="filter-type">
+                    <option value="">All Types</option>
+                </select>
+            </div>
+            
+            <div class="org-list" id="org-list">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Loading organizations...
+                </div>
+            </div>
+        </div>
+        
+        <!-- AI Research Panel -->
+        <div class="panel research-section">
+            <div class="panel-header">
+                <h2 class="panel-title">
+                    <span class="icon">🤖</span>
+                    AI Research
+                </h2>
+                <span class="ai-badge">
+                    <span>✨</span> Powered by Claude
+                </span>
+            </div>
+            
+            <p style="color: var(--text-secondary); margin-bottom: var(--space-md); font-size: 0.9rem;">
+                Ask Claude to research fishing organizations. It will search the web and return structured data you can add to your database.
+            </p>
+            
+            <textarea class="research-input" id="research-query" placeholder="Example: Find bass fishing clubs in Texas&#10;&#10;Or: Research fly fishing organizations in the Rocky Mountain states&#10;&#10;Or: What conservation groups focus on redfish in the Gulf Coast?"></textarea>
+            
+            <div class="research-filters">
+                <select id="research-state">
+                    <option value="">Any State</option>
+                    <option value="NC">North Carolina</option>
+                    <option value="SC">South Carolina</option>
+                    <option value="GA">Georgia</option>
+                    <option value="FL">Florida</option>
+                    <option value="VA">Virginia</option>
+                    <option value="TX">Texas</option>
+                    <option value="LA">Louisiana</option>
+                    <option value="AL">Alabama</option>
+                    <option value="MS">Mississippi</option>
+                </select>
+                <select id="research-type">
+                    <option value="">Any Type</option>
+                    <option value="fishing club">Fishing Club</option>
+                    <option value="conservation">Conservation</option>
+                    <option value="tournament">Tournament</option>
+                    <option value="guide association">Guide Association</option>
+                    <option value="fly fishing">Fly Fishing</option>
+                </select>
+            </div>
+            
+            <button class="btn btn-primary" style="width: 100%;" onclick="runResearch()">
+                <span>🔍</span> Research Organizations
+            </button>
+            
+            <div class="research-results" id="research-results" style="display: none;">
+                <h3 style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: var(--space-md);">
+                    Research Results
+                </h3>
+                <div id="results-list"></div>
+                <button class="btn btn-secondary" style="width: 100%; margin-top: var(--space-md);" onclick="addAllResults()">
+                    Add All to Database
+                </button>
+            </div>
+        </div>
+      </div><!-- /view-browse -->
+
+      <!-- ===== Tournaments View ===== -->
+      <div id="view-tournaments" class="view">
+        <!-- Tournament List Panel -->
+        <div class="panel">
+            <div class="panel-header">
+                <h2 class="panel-title">
+                    <span class="icon">🏆</span>
+                    Tournaments
+                </h2>
+                <button class="btn btn-primary" onclick="openTournamentModal()">
+                    <span>+</span> Add Tournament
+                </button>
+            </div>
+
+            <div class="stats-bar" id="tournament-stats">
+                <div class="stat">
+                    <div class="stat-value" id="tstat-total">0</div>
+                    <div class="stat-label">Total</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="tstat-upcoming">0</div>
+                    <div class="stat-label">Upcoming</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-value" id="tstat-states">0</div>
+                    <div class="stat-label">States</div>
+                </div>
+            </div>
+
+            <div class="search-bar">
+                <input type="text" class="search-input" id="t-search" placeholder="Search tournaments...">
+                <select class="search-input" id="t-filter-state">
+                    <option value="">All States</option>
+                    <option value="NC">NC</option><option value="SC">SC</option>
+                    <option value="GA">GA</option><option value="FL">FL</option>
+                    <option value="AL">AL</option><option value="MS">MS</option>
+                    <option value="LA">LA</option><option value="TX">TX</option>
+                </select>
+                <select class="search-input" id="t-filter-species">
+                    <option value="">All Species</option>
+                </select>
+            </div>
+            <div class="search-bar" style="margin-top: -0.75rem;">
+                <input type="date" class="search-input" id="t-date-from" title="From date">
+                <input type="date" class="search-input" id="t-date-to" title="To date">
+            </div>
+
+            <div class="org-list" id="tournament-list">
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Loading tournaments...
+                </div>
+            </div>
+        </div>
+
+        <!-- Tournament Research / Seed Panel -->
+        <div class="panel research-section">
+            <div class="panel-header">
+                <h2 class="panel-title">
+                    <span class="icon">🤖</span>
+                    AI Research
+                </h2>
+                <span class="ai-badge"><span>✨</span> Powered by Claude</span>
+            </div>
+
+            <p style="color: var(--text-secondary); margin-bottom: var(--space-md); font-size: 0.9rem;">
+                Ask Claude to research fishing tournaments across the Southeast coast.
+            </p>
+
+            <textarea class="research-input" id="t-research-query" placeholder="Example: Find redfish tournaments in Louisiana&#10;&#10;Or: Upcoming offshore fishing competitions in Florida"></textarea>
+
+            <div class="research-filters">
+                <select id="t-research-state">
+                    <option value="">Any State</option>
+                    <option value="NC">North Carolina</option>
+                    <option value="SC">South Carolina</option>
+                    <option value="GA">Georgia</option>
+                    <option value="FL">Florida</option>
+                    <option value="AL">Alabama</option>
+                    <option value="MS">Mississippi</option>
+                    <option value="LA">Louisiana</option>
+                    <option value="TX">Texas</option>
+                </select>
+                <select id="t-research-species">
+                    <option value="">Any Species</option>
+                    <option value="redfish">Redfish</option>
+                    <option value="bass">Bass</option>
+                    <option value="king mackerel">King Mackerel</option>
+                    <option value="tarpon">Tarpon</option>
+                    <option value="snook">Snook</option>
+                    <option value="offshore">Offshore</option>
+                    <option value="flounder">Flounder</option>
+                </select>
+            </div>
+
+            <button class="btn btn-primary" style="width: 100%;" onclick="runTournamentResearch()">
+                <span>🔍</span> Research Tournaments
+            </button>
+
+            <div class="research-results" id="t-research-results" style="display: none;">
+                <h3 style="font-size: 0.9rem; color: var(--text-secondary); margin-bottom: var(--space-md);">
+                    Research Results
+                </h3>
+                <div id="t-results-list"></div>
+                <button class="btn btn-secondary" style="width: 100%; margin-top: var(--space-md);" onclick="addAllTournamentResults()">
+                    Add All to Database
+                </button>
+            </div>
+
+            <div style="margin-top: var(--space-xl); padding-top: var(--space-lg); border-top: 1px solid rgba(255,255,255,0.1);">
+                <p style="color: var(--text-secondary); font-size: 0.85rem; margin-bottom: var(--space-md);">
+                    No tournaments yet? Load sample data to explore the feature.
+                </p>
+                <button class="btn btn-secondary" style="width: 100%;" onclick="seedTournaments()">
+                    🎣 Seed Sample Data (20 tournaments)
+                </button>
+            </div>
+        </div>
+      </div><!-- /view-tournaments -->
+
+    </main>
+    
+    <!-- Add/Edit Modal -->
+    <div class="modal-overlay" id="modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modal-title">Add Organization</h3>
+                <button class="modal-close" onclick="closeModal()">&times;</button>
+            </div>
+            
+            <form id="org-form">
+                <input type="hidden" id="form-id">
+                
+                <div class="form-group">
+                    <label class="form-label">Organization Name *</label>
+                    <input type="text" class="form-input" id="form-name" required>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Type</label>
+                        <input type="text" class="form-input" id="form-type" placeholder="e.g., Fishing Club, Conservation">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Focus Area</label>
+                        <input type="text" class="form-input" id="form-focus" placeholder="e.g., Bass Fishing, Fly Fishing">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">State/Region</label>
+                        <input type="text" class="form-input" id="form-state" placeholder="e.g., NC, Southeast">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Website</label>
+                        <input type="url" class="form-input" id="form-website" placeholder="https://...">
+                    </div>
+                </div>
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Contact</label>
+                        <input type="text" class="form-input" id="form-contact" placeholder="Phone, email, etc.">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Membership</label>
+                        <input type="text" class="form-input" id="form-membership" placeholder="Size, cost, etc.">
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-input" id="form-description" placeholder="Brief description of the organization..."></textarea>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Notes</label>
+                    <textarea class="form-input" id="form-notes" placeholder="Additional notes..."></textarea>
+                </div>
+                
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="delete-btn" style="display: none;" onclick="deleteOrganization()">Delete</button>
+                    <button type="submit" class="btn btn-primary">Save Organization</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Tournament Add/Edit Modal -->
+    <div class="modal-overlay" id="tournament-modal">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 class="modal-title" id="t-modal-title">Add Tournament</h3>
+                <button class="modal-close" onclick="closeTournamentModal()">&times;</button>
+            </div>
+            <form id="tournament-form">
+                <input type="hidden" id="tf-id">
+                <div class="form-group">
+                    <label class="form-label">Tournament Name *</label>
+                    <input type="text" class="form-input" id="tf-name" required>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Event Date *</label>
+                        <input type="date" class="form-input" id="tf-event-date" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Event Time</label>
+                        <input type="text" class="form-input" id="tf-event-time" placeholder="6:00 AM">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">End Date</label>
+                        <input type="date" class="form-input" id="tf-end-date">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">State *</label>
+                        <select class="form-input" id="tf-state" required>
+                            <option value="">Select...</option>
+                            <option value="NC">NC</option><option value="SC">SC</option>
+                            <option value="GA">GA</option><option value="FL">FL</option>
+                            <option value="AL">AL</option><option value="MS">MS</option>
+                            <option value="LA">LA</option><option value="TX">TX</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Location *</label>
+                        <input type="text" class="form-input" id="tf-location" placeholder="City, venue" required>
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Species</label>
+                        <input type="text" class="form-input" id="tf-species" placeholder="e.g., Redfish, Bass">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Entry Fee</label>
+                        <input type="text" class="form-input" id="tf-entry-fee" placeholder="$150 per boat">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Max Participants</label>
+                        <input type="number" class="form-input" id="tf-max-participants" placeholder="e.g., 50">
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Organizer</label>
+                    <input type="text" class="form-input" id="tf-organizer" placeholder="Club or organization name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Rules Summary</label>
+                    <textarea class="form-input" id="tf-rules" placeholder="Key rules..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <textarea class="form-input" id="tf-description" placeholder="Brief description..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Prize Info</label>
+                    <input type="text" class="form-input" id="tf-prize" placeholder="$5,000 first place">
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Contact Name</label>
+                        <input type="text" class="form-input" id="tf-contact-name">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Contact Phone</label>
+                        <input type="text" class="form-input" id="tf-contact-phone">
+                    </div>
+                </div>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">Contact Email</label>
+                        <input type="email" class="form-input" id="tf-contact-email">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label">Website</label>
+                        <input type="url" class="form-input" id="tf-contact-website" placeholder="https://...">
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeTournamentModal()">Cancel</button>
+                    <button type="button" class="btn btn-danger" id="t-delete-btn" style="display:none;" onclick="deleteTournament()">Delete</button>
+                    <button type="submit" class="btn btn-primary">Save Tournament</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toast-container"></div>
+    
+    <script>
+        // ============================================================================
+        // State
+        // ============================================================================
+        
+        let organizations = [];
+        let researchResults = [];
+        let currentOrgId = null;
+        
+        const API_BASE = '';  // Same origin
+        
+        // ============================================================================
+        // API Functions
+        // ============================================================================
+        
+        async function fetchOrganizations(params = {}) {
+            const queryParams = new URLSearchParams();
+            if (params.search) queryParams.append('search', params.search);
+            if (params.state) queryParams.append('state', params.state);
+            if (params.type) queryParams.append('org_type', params.type);
+            
+            const url = `${API_BASE}/api/organizations?${queryParams}`;
+            const response = await fetch(url);
+            return response.json();
+        }
+        
+        async function fetchStats() {
+            const response = await fetch(`${API_BASE}/api/stats`);
+            return response.json();
+        }
+        
+        async function saveOrganization(org) {
+            const method = org.id ? 'PUT' : 'POST';
+            const url = org.id ? `${API_BASE}/api/organizations/${org.id}` : `${API_BASE}/api/organizations`;
+            
+            const response = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(org)
+            });
+            
+            if (!response.ok) throw new Error('Failed to save');
+            return response.json();
+        }
+        
+        async function deleteOrg(id) {
+            const response = await fetch(`${API_BASE}/api/organizations/${id}`, {
+                method: 'DELETE'
+            });
+            if (!response.ok) throw new Error('Failed to delete');
+        }
+        
+        async function research(query, state, type) {
+            const response = await fetch(`${API_BASE}/api/research`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ query, state, org_type: type })
+            });
+            
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.detail || 'Research failed');
+            }
+            
+            return response.json();
+        }
+        
+        async function addResearchResults(orgs) {
+            const response = await fetch(`${API_BASE}/api/research/add`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(orgs)
+            });
+            return response.json();
+        }
+        
+        // ============================================================================
+        // UI Functions
+        // ============================================================================
+        
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            toast.textContent = message;
+            container.appendChild(toast);
+            
+            setTimeout(() => toast.remove(), 3000);
+        }
+        
+        function renderOrganizations() {
+            const list = document.getElementById('org-list');
+            
+            if (organizations.length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">🎣</div>
+                        <p>No organizations found</p>
+                        <p style="font-size: 0.85rem; margin-top: 0.5rem;">Try adjusting your filters or use AI Research to find new organizations</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            list.innerHTML = organizations.map(org => `
+                <div class="org-card" onclick="editOrganization(${org.id})">
+                    <div class="org-card-header">
+                        <span class="org-name">${escapeHtml(org.name)}</span>
+                        ${org.org_type ? `<span class="org-type-badge">${escapeHtml(org.org_type)}</span>` : ''}
+                    </div>
+                    <div class="org-meta">
+                        ${org.state_region ? `<span>📍 ${escapeHtml(org.state_region)}</span>` : ''}
+                        ${org.focus_area ? `<span>🎯 ${escapeHtml(org.focus_area)}</span>` : ''}
+                    </div>
+                    ${org.description ? `<p class="org-description">${escapeHtml(org.description)}</p>` : ''}
+                </div>
+            `).join('');
+        }
+        
+        function renderStats(stats) {
+            document.getElementById('stat-total').textContent = stats.total_organizations;
+            document.getElementById('stat-states').textContent = stats.by_state?.length || 0;
+            document.getElementById('stat-types').textContent = stats.by_type?.length || 0;
+            
+            // Populate filter dropdowns
+            const stateSelect = document.getElementById('filter-state');
+            const currentState = stateSelect.value;
+            stateSelect.innerHTML = '<option value="">All States</option>' + 
+                (stats.by_state || []).map(s => 
+                    `<option value="${escapeHtml(s.state)}">${escapeHtml(s.state)} (${s.count})</option>`
+                ).join('');
+            stateSelect.value = currentState;
+            
+            const typeSelect = document.getElementById('filter-type');
+            const currentType = typeSelect.value;
+            typeSelect.innerHTML = '<option value="">All Types</option>' + 
+                (stats.by_type || []).map(t => 
+                    `<option value="${escapeHtml(t.type)}">${escapeHtml(t.type)} (${t.count})</option>`
+                ).join('');
+            typeSelect.value = currentType;
+        }
+        
+        function renderResearchResults() {
+            const container = document.getElementById('research-results');
+            const list = document.getElementById('results-list');
+            
+            if (researchResults.length === 0) {
+                container.style.display = 'none';
+                return;
+            }
+            
+            container.style.display = 'block';
+            list.innerHTML = researchResults.map((org, index) => `
+                <div class="result-item">
+                    <h4>${escapeHtml(org.name)}</h4>
+                    <p>
+                        ${org.org_type ? `<strong>${escapeHtml(org.org_type)}</strong> • ` : ''}
+                        ${org.state_region ? `${escapeHtml(org.state_region)} • ` : ''}
+                        ${org.focus_area || ''}
+                    </p>
+                    ${org.description ? `<p>${escapeHtml(org.description)}</p>` : ''}
+                    <div class="result-actions">
+                        <button class="btn btn-sm btn-primary" onclick="addSingleResult(${index})">Add</button>
+                        <button class="btn btn-sm btn-secondary" onclick="removeResult(${index})">Skip</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        // ============================================================================
+        // Event Handlers
+        // ============================================================================
+        
+        async function loadData() {
+            try {
+                const [orgs, stats] = await Promise.all([
+                    fetchOrganizations(),
+                    fetchStats()
+                ]);
+                organizations = orgs;
+                renderOrganizations();
+                renderStats(stats);
+            } catch (error) {
+                showToast('Failed to load data', 'error');
+                console.error(error);
+            }
+        }
+        
+        async function applyFilters() {
+            const search = document.getElementById('search-input').value;
+            const state = document.getElementById('filter-state').value;
+            const type = document.getElementById('filter-type').value;
+            
+            document.getElementById('org-list').innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Loading...
+                </div>
+            `;
+            
+            try {
+                organizations = await fetchOrganizations({ search, state, type });
+                renderOrganizations();
+            } catch (error) {
+                showToast('Failed to filter', 'error');
+            }
+        }
+        
+        function openAddModal() {
+            currentOrgId = null;
+            document.getElementById('modal-title').textContent = 'Add Organization';
+            document.getElementById('delete-btn').style.display = 'none';
+            document.getElementById('org-form').reset();
+            document.getElementById('modal').classList.add('active');
+        }
+        
+        async function editOrganization(id) {
+            const org = organizations.find(o => o.id === id);
+            if (!org) return;
+            
+            currentOrgId = id;
+            document.getElementById('modal-title').textContent = 'Edit Organization';
+            document.getElementById('delete-btn').style.display = 'block';
+            
+            document.getElementById('form-id').value = org.id;
+            document.getElementById('form-name').value = org.name || '';
+            document.getElementById('form-type').value = org.org_type || '';
+            document.getElementById('form-focus').value = org.focus_area || '';
+            document.getElementById('form-state').value = org.state_region || '';
+            document.getElementById('form-website').value = org.website || '';
+            document.getElementById('form-contact').value = org.contact || '';
+            document.getElementById('form-membership').value = org.membership || '';
+            document.getElementById('form-description').value = org.description || '';
+            document.getElementById('form-notes').value = org.notes || '';
+            
+            document.getElementById('modal').classList.add('active');
+        }
+        
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
+        }
+        
+        async function handleFormSubmit(e) {
+            e.preventDefault();
+            
+            const org = {
+                id: currentOrgId,
+                name: document.getElementById('form-name').value,
+                org_type: document.getElementById('form-type').value,
+                focus_area: document.getElementById('form-focus').value,
+                state_region: document.getElementById('form-state').value,
+                website: document.getElementById('form-website').value,
+                contact: document.getElementById('form-contact').value,
+                membership: document.getElementById('form-membership').value,
+                description: document.getElementById('form-description').value,
+                notes: document.getElementById('form-notes').value
+            };
+            
+            try {
+                await saveOrganization(org);
+                showToast(currentOrgId ? 'Organization updated' : 'Organization added');
+                closeModal();
+                loadData();
+            } catch (error) {
+                showToast('Failed to save', 'error');
+            }
+        }
+        
+        async function deleteOrganization() {
+            if (!currentOrgId) return;
+            if (!confirm('Are you sure you want to delete this organization?')) return;
+            
+            try {
+                await deleteOrg(currentOrgId);
+                showToast('Organization deleted');
+                closeModal();
+                loadData();
+            } catch (error) {
+                showToast('Failed to delete', 'error');
+            }
+        }
+        
+        async function runResearch() {
+            const query = document.getElementById('research-query').value.trim();
+            if (!query) {
+                showToast('Please enter a research query', 'error');
+                return;
+            }
+            
+            const state = document.getElementById('research-state').value;
+            const type = document.getElementById('research-type').value;
+            
+            const resultsContainer = document.getElementById('research-results');
+            const resultsList = document.getElementById('results-list');
+            
+            resultsContainer.style.display = 'block';
+            resultsList.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    Researching with Claude AI...
+                </div>
+            `;
+            
+            try {
+                const result = await research(query, state, type);
+                researchResults = result.organizations || [];
+                
+                if (researchResults.length === 0) {
+                    resultsList.innerHTML = `
+                        <div class="empty-state">
+                            <p>No organizations found</p>
+                            <p style="font-size: 0.85rem;">${result.summary || 'Try a different search query'}</p>
+                        </div>
+                    `;
+                } else {
+                    renderResearchResults();
+                    showToast(`Found ${researchResults.length} organizations`);
+                }
+            } catch (error) {
+                resultsList.innerHTML = `
+                    <div class="empty-state">
+                        <p style="color: var(--coral);">Research failed</p>
+                        <p style="font-size: 0.85rem;">${error.message}</p>
+                    </div>
+                `;
+                showToast(error.message, 'error');
+            }
+        }
+        
+        async function addSingleResult(index) {
+            const org = researchResults[index];
+            try {
+                await saveOrganization(org);
+                showToast(`Added: ${org.name}`);
+                researchResults.splice(index, 1);
+                renderResearchResults();
+                loadData();
+            } catch (error) {
+                showToast('Failed to add', 'error');
+            }
+        }
+        
+        function removeResult(index) {
+            researchResults.splice(index, 1);
+            renderResearchResults();
+        }
+        
+        async function addAllResults() {
+            if (researchResults.length === 0) return;
+            
+            try {
+                const result = await addResearchResults(researchResults);
+                showToast(`Added ${result.added} organizations`);
+                researchResults = [];
+                renderResearchResults();
+                loadData();
+            } catch (error) {
+                showToast('Failed to add organizations', 'error');
+            }
+        }
+        
+        async function exportData() {
+            try {
+                const response = await fetch(`${API_BASE}/api/export`);
+                const data = await response.json();
+                
+                const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `fishing_organizations_${new Date().toISOString().split('T')[0]}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                
+                showToast('Data exported');
+            } catch (error) {
+                showToast('Export failed', 'error');
+            }
+        }
+        
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+        
+        // ============================================================================
+        // View Switching
+        // ============================================================================
+
+        function switchView(view) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.querySelectorAll('.nav-link').forEach(n => n.classList.remove('active'));
+
+            const el = document.getElementById('view-' + view);
+            if (el) el.classList.add('active');
+
+            const link = document.querySelector(`.nav-link[data-view="${view}"]`);
+            if (link) link.classList.add('active');
+
+            if (view === 'tournaments') loadTournaments();
+        }
+
+        // ============================================================================
+        // Tournament State & API
+        // ============================================================================
+
+        let tournaments = [];
+        let tournamentResearchResults = [];
+        let currentTournamentId = null;
+
+        async function fetchTournaments(params = {}) {
+            const qp = new URLSearchParams();
+            if (params.search) qp.append('search', params.search);
+            if (params.state) qp.append('state', params.state);
+            if (params.species) qp.append('species', params.species);
+            if (params.date_from) qp.append('date_from', params.date_from);
+            if (params.date_to) qp.append('date_to', params.date_to);
+            const resp = await fetch(`${API_BASE}/api/tournaments?${qp}`);
+            return resp.json();
+        }
+
+        async function fetchTournamentStats() {
+            const resp = await fetch(`${API_BASE}/api/tournaments/stats`);
+            return resp.json();
+        }
+
+        async function saveTournament(t) {
+            const method = t.id ? 'PUT' : 'POST';
+            const url = t.id ? `${API_BASE}/api/tournaments/${t.id}` : `${API_BASE}/api/tournaments`;
+            const resp = await fetch(url, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(t)
+            });
+            if (!resp.ok) throw new Error('Failed to save tournament');
+            return resp.json();
+        }
+
+        async function deleteTournamentById(id) {
+            const resp = await fetch(`${API_BASE}/api/tournaments/${id}`, { method: 'DELETE' });
+            if (!resp.ok) throw new Error('Failed to delete');
+        }
+
+        // ============================================================================
+        // Tournament UI
+        // ============================================================================
+
+        async function loadTournaments() {
+            try {
+                const [list, stats] = await Promise.all([fetchTournaments(), fetchTournamentStats()]);
+                tournaments = list;
+                renderTournaments();
+                renderTournamentStats(stats);
+            } catch (e) {
+                showToast('Failed to load tournaments', 'error');
+            }
+        }
+
+        function renderTournaments() {
+            const el = document.getElementById('tournament-list');
+            if (tournaments.length === 0) {
+                el.innerHTML = `<div class="empty-state">
+                    <div class="empty-state-icon">🏆</div>
+                    <p>No tournaments found</p>
+                    <p style="font-size:0.85rem;margin-top:0.5rem;">Click "Seed Sample Data" on the right to load sample tournaments, or add your own.</p>
+                </div>`;
+                return;
+            }
+            const today = new Date().toISOString().split('T')[0];
+            el.innerHTML = tournaments.map(t => {
+                const upcoming = t.event_date >= today;
+                const cls = upcoming ? 'tournament-upcoming' : 'tournament-past';
+                return `<div class="org-card ${cls}" onclick="editTournament(${t.id})">
+                    <div class="org-card-header">
+                        <span class="org-name">${escapeHtml(t.name)}</span>
+                        ${t.species ? `<span class="species-badge">${escapeHtml(t.species)}</span>` : ''}
+                    </div>
+                    <div class="org-meta">
+                        <span class="tournament-date">📅 ${formatDate(t.event_date)}${t.end_date && t.end_date !== t.event_date ? ' - ' + formatDate(t.end_date) : ''}${t.event_time ? ' at ' + escapeHtml(t.event_time) : ''}</span>
+                    </div>
+                    <div class="org-meta">
+                        <span>📍 ${escapeHtml(t.location)}</span>
+                        ${t.entry_fee ? `<span class="tournament-fee">💰 ${escapeHtml(t.entry_fee)}</span>` : ''}
+                    </div>
+                    ${t.organizer ? `<div class="org-meta"><span>🏢 ${escapeHtml(t.organizer)}</span></div>` : ''}
+                    ${t.description ? `<p class="org-description">${escapeHtml(t.description)}</p>` : ''}
+                </div>`;
+            }).join('');
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            const d = new Date(dateStr + 'T00:00:00');
+            return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+        }
+
+        function renderTournamentStats(stats) {
+            document.getElementById('tstat-total').textContent = stats.total_tournaments;
+            document.getElementById('tstat-upcoming').textContent = stats.upcoming;
+            document.getElementById('tstat-states').textContent = stats.by_state?.length || 0;
+
+            // Populate species filter
+            const sel = document.getElementById('t-filter-species');
+            const cur = sel.value;
+            sel.innerHTML = '<option value="">All Species</option>' +
+                (stats.by_species || []).map(s =>
+                    `<option value="${escapeHtml(s.species)}">${escapeHtml(s.species)} (${s.count})</option>`
+                ).join('');
+            sel.value = cur;
+        }
+
+        async function applyTournamentFilters() {
+            const params = {
+                search: document.getElementById('t-search').value,
+                state: document.getElementById('t-filter-state').value,
+                species: document.getElementById('t-filter-species').value,
+                date_from: document.getElementById('t-date-from').value,
+                date_to: document.getElementById('t-date-to').value,
+            };
+            document.getElementById('tournament-list').innerHTML = '<div class="loading"><div class="spinner"></div>Loading...</div>';
+            try {
+                tournaments = await fetchTournaments(params);
+                renderTournaments();
+            } catch (e) {
+                showToast('Failed to filter', 'error');
+            }
+        }
+
+        // ============================================================================
+        // Tournament Modal
+        // ============================================================================
+
+        function openTournamentModal() {
+            currentTournamentId = null;
+            document.getElementById('t-modal-title').textContent = 'Add Tournament';
+            document.getElementById('t-delete-btn').style.display = 'none';
+            document.getElementById('tournament-form').reset();
+            document.getElementById('tournament-modal').classList.add('active');
+        }
+
+        function closeTournamentModal() {
+            document.getElementById('tournament-modal').classList.remove('active');
+        }
+
+        function editTournament(id) {
+            const t = tournaments.find(x => x.id === id);
+            if (!t) return;
+            currentTournamentId = id;
+            document.getElementById('t-modal-title').textContent = 'Edit Tournament';
+            document.getElementById('t-delete-btn').style.display = 'block';
+
+            document.getElementById('tf-id').value = t.id;
+            document.getElementById('tf-name').value = t.name || '';
+            document.getElementById('tf-event-date').value = t.event_date || '';
+            document.getElementById('tf-event-time').value = t.event_time || '';
+            document.getElementById('tf-end-date').value = t.end_date || '';
+            document.getElementById('tf-state').value = t.state || '';
+            document.getElementById('tf-location').value = t.location || '';
+            document.getElementById('tf-species').value = t.species || '';
+            document.getElementById('tf-entry-fee').value = t.entry_fee || '';
+            document.getElementById('tf-max-participants').value = t.max_participants || '';
+            document.getElementById('tf-organizer').value = t.organizer || '';
+            document.getElementById('tf-rules').value = t.rules_summary || '';
+            document.getElementById('tf-description').value = t.description || '';
+            document.getElementById('tf-prize').value = t.prize_info || '';
+            document.getElementById('tf-contact-name').value = t.contact_name || '';
+            document.getElementById('tf-contact-phone').value = t.contact_phone || '';
+            document.getElementById('tf-contact-email').value = t.contact_email || '';
+            document.getElementById('tf-contact-website').value = t.contact_website || '';
+
+            document.getElementById('tournament-modal').classList.add('active');
+        }
+
+        async function handleTournamentSubmit(e) {
+            e.preventDefault();
+            const t = {
+                id: currentTournamentId,
+                name: document.getElementById('tf-name').value,
+                event_date: document.getElementById('tf-event-date').value,
+                event_time: document.getElementById('tf-event-time').value,
+                end_date: document.getElementById('tf-end-date').value || null,
+                state: document.getElementById('tf-state').value,
+                location: document.getElementById('tf-location').value,
+                species: document.getElementById('tf-species').value,
+                entry_fee: document.getElementById('tf-entry-fee').value,
+                max_participants: parseInt(document.getElementById('tf-max-participants').value) || null,
+                organizer: document.getElementById('tf-organizer').value,
+                rules_summary: document.getElementById('tf-rules').value,
+                description: document.getElementById('tf-description').value,
+                prize_info: document.getElementById('tf-prize').value,
+                contact_name: document.getElementById('tf-contact-name').value,
+                contact_phone: document.getElementById('tf-contact-phone').value,
+                contact_email: document.getElementById('tf-contact-email').value,
+                contact_website: document.getElementById('tf-contact-website').value,
+            };
+            try {
+                await saveTournament(t);
+                showToast(currentTournamentId ? 'Tournament updated' : 'Tournament added');
+                closeTournamentModal();
+                loadTournaments();
+            } catch (e) {
+                showToast('Failed to save tournament', 'error');
+            }
+        }
+
+        async function deleteTournament() {
+            if (!currentTournamentId) return;
+            if (!confirm('Delete this tournament?')) return;
+            try {
+                await deleteTournamentById(currentTournamentId);
+                showToast('Tournament deleted');
+                closeTournamentModal();
+                loadTournaments();
+            } catch (e) {
+                showToast('Failed to delete', 'error');
+            }
+        }
+
+        // ============================================================================
+        // Tournament Research
+        // ============================================================================
+
+        async function runTournamentResearch() {
+            const query = document.getElementById('t-research-query').value.trim();
+            if (!query) { showToast('Enter a research query', 'error'); return; }
+            const state = document.getElementById('t-research-state').value;
+            const species = document.getElementById('t-research-species').value;
+
+            const container = document.getElementById('t-research-results');
+            const list = document.getElementById('t-results-list');
+            container.style.display = 'block';
+            list.innerHTML = '<div class="loading"><div class="spinner"></div>Researching with Claude AI...</div>';
+
+            try {
+                const resp = await fetch(`${API_BASE}/api/tournaments/research`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ query, state, species })
+                });
+                if (!resp.ok) {
+                    const err = await resp.json();
+                    throw new Error(err.detail || 'Research failed');
+                }
+                const result = await resp.json();
+                tournamentResearchResults = result.tournaments || [];
+                if (tournamentResearchResults.length === 0) {
+                    list.innerHTML = `<div class="empty-state"><p>No tournaments found</p><p style="font-size:0.85rem;">${result.summary || 'Try a different query'}</p></div>`;
+                } else {
+                    renderTournamentResearchResults();
+                    showToast(`Found ${tournamentResearchResults.length} tournaments`);
+                }
+            } catch (e) {
+                list.innerHTML = `<div class="empty-state"><p style="color:var(--coral);">Research failed</p><p style="font-size:0.85rem;">${e.message}</p></div>`;
+                showToast(e.message, 'error');
+            }
+        }
+
+        function renderTournamentResearchResults() {
+            const list = document.getElementById('t-results-list');
+            if (tournamentResearchResults.length === 0) {
+                document.getElementById('t-research-results').style.display = 'none';
+                return;
+            }
+            list.innerHTML = tournamentResearchResults.map((t, i) => `
+                <div class="result-item">
+                    <h4>${escapeHtml(t.name)}</h4>
+                    <p>${t.event_date ? `<strong>${formatDate(t.event_date)}</strong> • ` : ''}${t.state || ''} • ${t.species || ''}</p>
+                    ${t.description ? `<p>${escapeHtml(t.description)}</p>` : ''}
+                    <div class="result-actions">
+                        <button class="btn btn-sm btn-primary" onclick="addSingleTournamentResult(${i})">Add</button>
+                        <button class="btn btn-sm btn-secondary" onclick="skipTournamentResult(${i})">Skip</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function addSingleTournamentResult(index) {
+            const t = tournamentResearchResults[index];
+            try {
+                await saveTournament(t);
+                showToast(`Added: ${t.name}`);
+                tournamentResearchResults.splice(index, 1);
+                renderTournamentResearchResults();
+                loadTournaments();
+            } catch (e) {
+                showToast('Failed to add', 'error');
+            }
+        }
+
+        function skipTournamentResult(index) {
+            tournamentResearchResults.splice(index, 1);
+            renderTournamentResearchResults();
+        }
+
+        async function addAllTournamentResults() {
+            if (tournamentResearchResults.length === 0) return;
+            try {
+                const resp = await fetch(`${API_BASE}/api/tournaments/research/add`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(tournamentResearchResults)
+                });
+                const result = await resp.json();
+                showToast(`Added ${result.added} tournaments`);
+                tournamentResearchResults = [];
+                renderTournamentResearchResults();
+                loadTournaments();
+            } catch (e) {
+                showToast('Failed to add tournaments', 'error');
+            }
+        }
+
+        async function seedTournaments() {
+            try {
+                const resp = await fetch(`${API_BASE}/api/tournaments/seed`, { method: 'POST' });
+                const result = await resp.json();
+                showToast(result.message);
+                loadTournaments();
+            } catch (e) {
+                showToast('Failed to seed', 'error');
+            }
+        }
+
+        // ============================================================================
+        // Event Listeners
+        // ============================================================================
+        
+        document.getElementById('org-form').addEventListener('submit', handleFormSubmit);
+        
+        document.getElementById('search-input').addEventListener('input', debounce(applyFilters, 300));
+        document.getElementById('filter-state').addEventListener('change', applyFilters);
+        document.getElementById('filter-type').addEventListener('change', applyFilters);
+        
+        // Tournament form & filters
+        document.getElementById('tournament-form').addEventListener('submit', handleTournamentSubmit);
+        document.getElementById('t-search').addEventListener('input', debounce(applyTournamentFilters, 300));
+        document.getElementById('t-filter-state').addEventListener('change', applyTournamentFilters);
+        document.getElementById('t-filter-species').addEventListener('change', applyTournamentFilters);
+        document.getElementById('t-date-from').addEventListener('change', applyTournamentFilters);
+        document.getElementById('t-date-to').addEventListener('change', applyTournamentFilters);
+
+        // Close modals on overlay click
+        document.getElementById('modal').addEventListener('click', (e) => {
+            if (e.target.id === 'modal') closeModal();
+        });
+        document.getElementById('tournament-modal').addEventListener('click', (e) => {
+            if (e.target.id === 'tournament-modal') closeTournamentModal();
+        });
+
+        // Escape key closes modals
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') { closeModal(); closeTournamentModal(); }
+        });
+        
+        function debounce(fn, delay) {
+            let timeout;
+            return (...args) => {
+                clearTimeout(timeout);
+                timeout = setTimeout(() => fn(...args), delay);
+            };
+        }
+        
+        // ============================================================================
+        // Initialize
+        // ============================================================================
+        
+        loadData();
+    </script>
+</body>
+</html>
